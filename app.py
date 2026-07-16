@@ -1,9 +1,9 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import joblib
 import time
-import sys
-st.write(sys.version)
+
 # ─────────────────────────────────────────────
 #  PAGE CONFIG
 # ─────────────────────────────────────────────
@@ -17,17 +17,39 @@ st.set_page_config(
 # ─────────────────────────────────────────────
 #  LOAD MODEL (graceful demo stub)
 # ─────────────────────────────────────────────
+# NOTE: columns.pkl was saved incorrectly during training (it holds the raw
+# pre-encoding dataframe columns, including the "HeartDisease" target,
+# instead of the one-hot-encoded feature columns the scaler/model were
+# actually fit on). Rather than trust that file, we hardcode the correct
+# feature list here, taken directly from scaler.feature_names_in_.
+# This matches pd.get_dummies(df, drop_first=True), so the dropped baseline
+# categories (Sex_F, ChestPainType_ASY, RestingECG_LVH, ExerciseAngina_N,
+# ST_Slope_Down) are implied by all other dummy columns being 0.
+CORRECT_FEATURE_COLUMNS = [
+    "Age", "RestingBP", "Cholesterol", "FastingBS", "MaxHR", "Oldpeak",
+    "Sex_M",
+    "ChestPainType_ATA", "ChestPainType_NAP", "ChestPainType_TA",
+    "RestingECG_Normal", "RestingECG_ST",
+    "ExerciseAngina_Y",
+    "ST_Slope_Flat", "ST_Slope_Up",
+]
+
 @st.cache_resource
 def load_model():
     try:
         m = joblib.load("Logistic_Regression_heart.pkl")
         s = joblib.load("scaler.pkl")
-        c = joblib.load("columns.pkl")
-        return m, s, c, True
+        # Use the hardcoded correct column list rather than the broken
+        # columns.pkl. We still attempt to load columns.pkl only to fail
+        # fast if the model file itself is missing/corrupted.
+        joblib.load("columns.pkl")
+        c = CORRECT_FEATURE_COLUMNS
+        has_proba = hasattr(m, "predict_proba")
+        return m, s, c, True, has_proba
     except Exception:
-        return None, None, None, False
+        return None, None, None, False, False
 
-model, scaler, expected_columns, model_loaded = load_model()
+model, scaler, expected_columns, model_loaded, model_has_proba = load_model()
 
 # ─────────────────────────────────────────────
 #  THEME STATE
@@ -740,7 +762,17 @@ if predict_clicked:
         input_df    = input_df[expected_columns]
         scaled      = scaler.transform(input_df)
         prediction  = model.predict(scaled)[0]
-        probability = model.predict_proba(scaled)[0][1]
+
+        if model_has_proba:
+            probability = model.predict_proba(scaled)[0][1]
+        else:
+            # Model (e.g. an SVC saved without probability=True) has no
+            # predict_proba. Fall back to decision_function, squashed
+            # through a sigmoid, as an approximate confidence score.
+            # This is NOT a calibrated probability — just a stand-in so
+            # the UI still has something meaningful to show.
+            decision = model.decision_function(scaled)[0]
+            probability = 1 / (1 + np.exp(-decision))
     else:
         probability = 0.72
         prediction  = 1
@@ -850,6 +882,16 @@ if predict_clicked:
         )
 
         st.markdown(breakdown, unsafe_allow_html=True)
+
+    if model_loaded and not model_has_proba:
+        st.markdown("""
+        <div class="info-note">
+            ⚙️ <strong>Note:</strong> The saved model doesn't expose calibrated probabilities
+            (it was trained without <code>probability=True</code>). The percentage above is an
+            approximate confidence score derived from the model's decision boundary, not a
+            true calibrated probability.
+        </div>
+        """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("""
