@@ -1,431 +1,6 @@
-# import streamlit as st
-# import pandas as pd
-# import joblib
-
-# model = joblib.load("Logistic_Regression_heart.pkl")
-# scaler = joblib.load("scaler.pkl")
-# expected_columns = joblib.load("columns.pkl")
-
-# st.title("Heart Stroke Prediction by Amit ❤")
-# st.markdown("Provide The Following Details")
-
-# age = st.slider("Age",18,100,40)
-
-# sex = st.selectbox("SEX",['M','F'])
-
-# chest_pain = st.selectbox(
-#     "Chest Pain Type",
-#     ["ATA","NAP","TA","ASY"]
-# )
-
-# resting_bp = st.number_input(
-#     "Resting Blood Pressure(mm Hg)",
-#     80,200,120
-# )
-
-# cholesterol = st.number_input(
-#     "Cholesterol (mg/dL)",
-#     100,600,200
-# )
-
-# fasting_bs = st.selectbox(
-#     "Fasting Blood Sugar > 120 mg/dL",
-#     [0,1]
-# )
-
-# resting_ecg = st.selectbox(
-#     "Resting ECG",
-#     ["Normal","ST","LVH"]
-# )
-
-# max_hr = st.slider(
-#     "Max Heart Rate",
-#     60,220,150
-# )
-
-# exercise_angina = st.selectbox(
-#     "Exercise-Induced Angina",
-#     ["Y","N"]
-# )
-
-# oldpeak = st.slider(
-#     "Oldpeak (ST Depression)",
-#     0.0,6.0,1.0
-# )
-
-# st_slope = st.selectbox(
-#     "ST Slope",
-#     ["Up","Flat","Down"]
-# )
-
-# if st.button("Predict"):
-
-#     raw_input = {
-#         "Age": age,
-#         "RestingBP": resting_bp,
-#         "Cholesterol": cholesterol,
-#         "FastingBS": fasting_bs,
-#         "MaxHR": max_hr,
-#         "Oldpeak": oldpeak,
-
-#         "Sex_" + sex: 1,
-#         "ChestPainType_" + chest_pain: 1,
-#         "RestingECG_" + resting_ecg: 1,
-#         "ExerciseAngina_" + exercise_angina: 1,
-#         "ST_Slope_" + st_slope: 1
-#     }
-
-#     input_df = pd.DataFrame([raw_input])
-
-#     for col in expected_columns:
-#         if col not in input_df.columns:
-#             input_df[col] = 0
-
-#     input_df = input_df[expected_columns]
-
-#     scaled_input = scaler.transform(input_df)
-
-#     prediction = model.predict(scaled_input)[0]
-
-#     if prediction == 1:
-#         st.error("⚠ High Risk of Heart Disease")
-#     else:
-#         st.success("✅ Low Risk of Heart Disease")
-
-# import streamlit as st
-# import pandas as pd
-# import joblib
-# import numpy as np
-
-# # ---------------- PAGE CONFIG ----------------
-# st.set_page_config(
-#     page_title="AI Heart Disease Predictor",
-#     page_icon="❤",
-#     layout="wide",
-#     initial_sidebar_state="expanded"
-# )
-
-# # ---------------- LOAD MODEL ----------------
-# model = joblib.load("Logistic_Regression_heart.pkl")
-# scaler = joblib.load("scaler.pkl")
-# expected_columns = joblib.load("columns.pkl")
-
-# # ---------------- CUSTOM CSS ----------------
-# st.markdown("""
-# <style>
-
-# html, body, [class*="css"]  {
-#     font-family: 'Segoe UI', sans-serif;
-# }
-
-# .main {
-#     background: linear-gradient(to right, #eef2f7, #ffffff);
-# }
-
-# .main-title {
-#     font-size: 48px;
-#     font-weight: 800;
-#     text-align: center;
-#     color: #d81b60;
-#     margin-bottom: 5px;
-# }
-
-# .sub-title {
-#     text-align: center;
-#     color: #555;
-#     font-size: 18px;
-#     margin-bottom: 30px;
-# }
-
-# .card {
-#     background-color: white;
-#     padding: 25px;
-#     border-radius: 18px;
-#     box-shadow: 0px 4px 15px rgba(0,0,0,0.08);
-#     margin-bottom: 20px;
-# }
-
-# .metric-box {
-#     background: linear-gradient(135deg,#d81b60,#ff6f91);
-#     padding: 20px;
-#     border-radius: 15px;
-#     color: white;
-#     text-align: center;
-#     box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
-# }
-
-# .metric-number {
-#     font-size: 30px;
-#     font-weight: bold;
-# }
-
-# .metric-label {
-#     font-size: 15px;
-#     opacity: 0.9;
-# }
-
-# .stButton > button {
-#     width: 100%;
-#     height: 60px;
-#     border-radius: 14px;
-#     border: none;
-#     background: linear-gradient(90deg,#d81b60,#ff6f91);
-#     color: white;
-#     font-size: 22px;
-#     font-weight: bold;
-#     transition: 0.3s;
-# }
-
-# .stButton > button:hover {
-#     transform: scale(1.02);
-#     background: linear-gradient(90deg,#b0004f,#ff4778);
-#     color: white;
-# }
-
-# .result-success {
-#     background: #d4edda;
-#     padding: 25px;
-#     border-radius: 15px;
-#     color: #155724;
-#     text-align: center;
-#     font-size: 28px;
-#     font-weight: bold;
-# }
-
-# .result-danger {
-#     background: #f8d7da;
-#     padding: 25px;
-#     border-radius: 15px;
-#     color: #721c24;
-#     text-align: center;
-#     font-size: 28px;
-#     font-weight: bold;
-# }
-
-# .footer {
-#     text-align: center;
-#     color: gray;
-#     margin-top: 50px;
-# }
-
-# </style>
-# """, unsafe_allow_html=True)
-
-# # ---------------- SIDEBAR ----------------
-# with st.sidebar:
-
-#     st.image(
-#         "https://cdn-icons-png.flaticon.com/512/2966/2966486.png",
-#         width=120
-#     )
-
-#     st.title("❤ AI Health Dashboard")
-
-#     st.markdown("""
-#     ### About Project
-    
-#     This intelligent system predicts the possibility of heart disease using:
-    
-#     ✔ Logistic Regression  
-#     ✔ Machine Learning  
-#     ✔ Data Scaling  
-#     ✔ Real-time Prediction  
-    
-#     ---
-    
-#     ### Technologies
-    
-#     - Python
-#     - Streamlit
-#     - Scikit-Learn
-#     - Pandas
-#     """)
-
-# # ---------------- HEADER ----------------
-# st.markdown(
-#     "<div class='main-title'>❤ AI Heart Disease Prediction System</div>",
-#     unsafe_allow_html=True
-# )
-
-# st.markdown(
-#     "<div class='sub-title'>Advanced Machine Learning Based Healthcare Risk Analysis</div>",
-#     unsafe_allow_html=True
-# )
-
-# # ---------------- TOP METRICS ----------------
-# m1, m2, m3 = st.columns(3)
-
-# with m1:
-#     st.markdown("""
-#     <div class='metric-box'>
-#         <div class='metric-number'>95%</div>
-#         <div class='metric-label'>Prediction Accuracy</div>
-#     </div>
-#     """, unsafe_allow_html=True)
-
-# with m2:
-#     st.markdown("""
-#     <div class='metric-box'>
-#         <div class='metric-number'>24/7</div>
-#         <div class='metric-label'>AI Monitoring</div>
-#     </div>
-#     """, unsafe_allow_html=True)
-
-# with m3:
-#     st.markdown("""
-#     <div class='metric-box'>
-#         <div class='metric-number'>ML</div>
-#         <div class='metric-label'>Powered Intelligence</div>
-#     </div>
-#     """, unsafe_allow_html=True)
-
-# st.markdown("<br>", unsafe_allow_html=True)
-
-# # ---------------- INPUT FORM ----------------
-# left, right = st.columns(2)
-
-# with left:
-
-#     st.markdown("<div class='card'>", unsafe_allow_html=True)
-
-#     st.subheader("👤 Personal Information")
-
-#     age = st.slider("Age", 18, 100, 40)
-
-#     sex = st.selectbox(
-#         "Gender",
-#         ['M', 'F']
-#     )
-
-#     chest_pain = st.selectbox(
-#         "Chest Pain Type",
-#         ["ATA", "NAP", "TA", "ASY"]
-#     )
-
-#     resting_bp = st.number_input(
-#         "Resting Blood Pressure",
-#         80, 200, 120
-#     )
-
-#     cholesterol = st.number_input(
-#         "Cholesterol Level",
-#         100, 600, 200
-#     )
-
-#     st.markdown("</div>", unsafe_allow_html=True)
-
-# with right:
-
-#     st.markdown("<div class='card'>", unsafe_allow_html=True)
-
-#     st.subheader("🩺 Medical Information")
-
-#     fasting_bs = st.selectbox(
-#         "Fasting Blood Sugar > 120",
-#         [0, 1]
-#     )
-
-#     resting_ecg = st.selectbox(
-#         "Resting ECG",
-#         ["Normal", "ST", "LVH"]
-#     )
-
-#     max_hr = st.slider(
-#         "Maximum Heart Rate",
-#         60, 220, 150
-#     )
-
-#     exercise_angina = st.selectbox(
-#         "Exercise-Induced Angina",
-#         ["Y", "N"]
-#     )
-
-#     oldpeak = st.slider(
-#         "Oldpeak (ST Depression)",
-#         0.0, 6.0, 1.0
-#     )
-
-#     st_slope = st.selectbox(
-#         "ST Slope",
-#         ["Up", "Flat", "Down"]
-#     )
-
-#     st.markdown("</div>", unsafe_allow_html=True)
-
-# # ---------------- PREDICTION ----------------
-# st.markdown("<br>", unsafe_allow_html=True)
-
-# if st.button("🚀 Predict Heart Disease Risk"):
-
-#     raw_input = {
-#         "Age": age,
-#         "RestingBP": resting_bp,
-#         "Cholesterol": cholesterol,
-#         "FastingBS": fasting_bs,
-#         "MaxHR": max_hr,
-#         "Oldpeak": oldpeak,
-
-#         "Sex_" + sex: 1,
-#         "ChestPainType_" + chest_pain: 1,
-#         "RestingECG_" + resting_ecg: 1,
-#         "ExerciseAngina_" + exercise_angina: 1,
-#         "ST_Slope_" + st_slope: 1
-#     }
-
-#     input_df = pd.DataFrame([raw_input])
-
-#     # Fill missing columns
-#     for col in expected_columns:
-#         if col not in input_df.columns:
-#             input_df[col] = 0
-
-#     input_df = input_df[expected_columns]
-
-#     # Scale Data
-#     scaled_input = scaler.transform(input_df)
-
-#     # Prediction
-#     prediction = model.predict(scaled_input)[0]
-
-#     # Probability
-#     probability = model.predict_proba(scaled_input)[0][1]
-
-#     st.markdown("<br>", unsafe_allow_html=True)
-
-#     st.subheader("📊 Prediction Result")
-
-#     st.progress(int(probability * 100))
-
-#     if prediction == 1:
-
-#         st.markdown(f"""
-#         <div class='result-danger'>
-#             ⚠ HIGH RISK OF HEART DISEASE <br><br>
-#             Risk Probability: {probability*100:.2f}%
-#         </div>
-#         """, unsafe_allow_html=True)
-
-#     else:
-
-#         st.markdown(f"""
-#         <div class='result-success'>
-#             ✅ LOW RISK OF HEART DISEASE <br><br>
-#             Safety Probability: {(1-probability)*100:.2f}%
-#         </div>
-#         """, unsafe_allow_html=True)
-
-# # ---------------- FOOTER ----------------
-# st.markdown("""
-# <div class='footer'>
-#     ❤ Developed by Amit | AI + Machine Learning + Streamlit
-# </div>
-# """, unsafe_allow_html=True)
-
-
 import streamlit as st
 import pandas as pd
 import joblib
-import numpy as np
 import time
 
 # ─────────────────────────────────────────────
@@ -444,9 +19,9 @@ st.set_page_config(
 @st.cache_resource
 def load_model():
     try:
-        m  = joblib.load("Logistic_Regression_heart.pkl")
-        s  = joblib.load("scaler.pkl")
-        c  = joblib.load("columns.pkl")
+        m = joblib.load("Logistic_Regression_heart.pkl")
+        s = joblib.load("scaler.pkl")
+        c = joblib.load("columns.pkl")
         return m, s, c, True
     except Exception:
         return None, None, None, False
@@ -1081,16 +656,16 @@ with col_left:
 
     age = st.slider("Age (years)", 18, 100, 52, help="Patient's current age")
 
-    sex = st.selectbox("Biological Sex", ["M — Male", "F — Female"])
-    sex_code = sex[0]
+    sex_option = st.selectbox("Biological Sex", ["M — Male", "F — Female"])
+    sex_code = sex_option.split(" — ")[0].strip()
 
-    chest_pain = st.selectbox(
+    chest_pain_option = st.selectbox(
         "Chest Pain Type",
         ["ATA — Atypical Angina", "NAP — Non-Anginal Pain",
-         "TA  — Typical Angina",  "ASY — Asymptomatic"],
+         "TA — Typical Angina", "ASY — Asymptomatic"],
         help="Classification of chest discomfort"
     )
-    cp_code = chest_pain[:3].strip()
+    cp_code = chest_pain_option.split(" — ")[0].strip()
 
     resting_bp = st.number_input("Resting Blood Pressure (mm Hg)", 80, 200, 130,
                                   help="Blood pressure measured at rest")
@@ -1105,30 +680,30 @@ with col_right:
     </div>
     """, unsafe_allow_html=True)
 
-    fasting_bs = st.selectbox("Fasting Blood Sugar > 120 mg/dL", ["0 — No", "1 — Yes"],
+    fasting_bs_option = st.selectbox("Fasting Blood Sugar > 120 mg/dL", ["0 — No", "1 — Yes"],
                                help="Whether fasting blood sugar exceeds 120 mg/dL")
-    fbs_code = int(fasting_bs[0])
+    fbs_code = int(fasting_bs_option.split(" — ")[0].strip())
 
-    resting_ecg = st.selectbox(
+    resting_ecg_option = st.selectbox(
         "Resting ECG Result",
-        ["Normal — Normal", "ST     — ST-T Wave Abnormality", "LVH    — Left Ventricular Hypertrophy"]
+        ["Normal — Normal", "ST — ST-T Wave Abnormality", "LVH — Left Ventricular Hypertrophy"]
     )
-    ecg_code = resting_ecg[:6].strip()
+    ecg_code = resting_ecg_option.split(" — ")[0].strip()
 
     max_hr = st.slider("Maximum Heart Rate Achieved", 60, 220, 142,
                         help="Peak heart rate during stress test")
 
-    exercise_angina = st.selectbox("Exercise-Induced Angina", ["N — No", "Y — Yes"],
+    exercise_angina_option = st.selectbox("Exercise-Induced Angina", ["N — No", "Y — Yes"],
                                     help="Angina triggered by physical exertion")
-    ea_code = exercise_angina[0]
+    ea_code = exercise_angina_option.split(" — ")[0].strip()
 
     oldpeak = st.slider("Oldpeak — ST Depression", 0.0, 6.0, 1.6, step=0.1,
                          help="ST depression relative to rest")
 
-    st_slope = st.selectbox("ST Segment Slope",
-                             ["Up   — Upsloping", "Flat — Flat", "Down — Downsloping"],
+    st_slope_option = st.selectbox("ST Segment Slope",
+                             ["Up — Upsloping", "Flat — Flat", "Down — Downsloping"],
                              help="Slope of peak exercise ST segment")
-    slope_code = st_slope[:4].strip()
+    slope_code = st_slope_option.split(" — ")[0].strip()
 
 # ─────────────────────────────────────────────
 #  PREDICT BUTTON
