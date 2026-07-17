@@ -910,7 +910,7 @@ st.markdown("""
 <div class="footer-wrap">
     <div class="footer-logo">🫀 CardioAI</div>
     <div class="footer-sub">
-        Crafted with precision by <a href="#">Amit</a> &nbsp;·&nbsp;
+        Crafted with precision by <a href="#">Umang</a> &nbsp;·&nbsp;
         Powered by Scikit-Learn &amp; Streamlit &nbsp;·&nbsp; © 2025 All Rights Reserved
     </div>
     <div class="footer-sub" style="margin-top:6px;font-size:11px;">
