@@ -141,7 +141,7 @@ This application is intended **for educational purposes only** and should **not*
 **Umang Memakiya**
 
 - GitHub: https://github.com/memakiyaumang
-- LinkedIn: https://www.linkedin.com/in/umangmemakiya/
+- LinkedIn: [https://www.linkedin.com/in/umangmemakiya/](https://www.linkedin.com/in/umang-memakiya/)
 
 ---
 
